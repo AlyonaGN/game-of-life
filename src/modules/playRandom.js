@@ -1,6 +1,6 @@
 const { setRandomBoardSize } = require('./setRandomBoardSize');
 const { createTableBoard } = require('./createTableBoard');
-const { displayNewTables } = require('./displayNewTables');
+const { generateNewBoard } = require('./generateNewBoard');
 const { DEAD_CELL, ALIVE_CELL } = require('../../utils/consts');
 
 const playRandom = () => {
@@ -21,11 +21,14 @@ const playRandom = () => {
     }
 
     //создаем и выводим в консоль доску в виде таблицы на основе полученного выше массива
-    const board = createTableBoard(cellsArray, boardSize, boardSquare);
+    const board = createTableBoard(cellsArray, boardSize);
     console.log(board);
 
-    //генерируем и выводим в консоль новые таблицы, основываясь на заданных правилах
-    displayNewTables(cellsArray, boardSize);
+    //генерируем и выводим в консоль новые таблицы каждую секунду, основываясь на заданных правилах
+    setTimeout(() => {
+        const updatedData = generateNewBoard(cellsArray, boardSize, boardSquare);
+        console.log(updatedData.board);
+    }, 1000);
 }
 
 module.exports = {
