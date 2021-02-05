@@ -1,9 +1,10 @@
 const Table = require ('cli-table');
 const colors = require('colors');
-const { ALIVE_CELL, chars } = require('../../utils/consts');
+const { ALIVE_CELL, chars, DEAD_CELL } = require('../utils/consts');
 
-const createTableBoard = (cellsArray, boardSize) => {
-    console.log(cellsArray);
+//функция, отвечающая за вывод в консоль доски на основе полученных данных
+const printBoard = (cellsArray, width, height) => {
+    //console.clear();
     const copyArray = cellsArray.map(x => x);
     const table = new Table({
         chars
@@ -11,20 +12,22 @@ const createTableBoard = (cellsArray, boardSize) => {
     
     /* создаем таблицу с количеством рядов равным полученной высоте таблицы 
     и количеством клеток в каждом ряду равным заданной ширине  */
-    for (let i = 0; i < boardSize.height; i++) {
+    for (let i = 0; i < height; i++) {
         table.push(
-            copyArray.splice(0, boardSize.width).map((cell) => {
-                if (cell === ALIVE_CELL) {
+            copyArray.splice(0, width).map((cell) => {
+                if (cell === 1) {
+                    cell = ALIVE_CELL;
                     return colors.green(cell);
                 }
                 else {
+                    cell = DEAD_CELL;
                     return colors.gray(cell);
                 }
             }));
-    }           
-    return table.toString();
+    }       
+    console.log(table.toString());
 }
 
 module.exports = {
-    createTableBoard,
+    printBoard,
 };

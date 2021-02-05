@@ -1,12 +1,9 @@
-const { createTableBoard } = require('./createTableBoard');
-const { DEAD_CELL, ALIVE_CELL } = require('../../utils/consts');
-
-const generateNewBoard = (cellsArray, boardSize, boardSquare) => {
-    const width = boardSize.width;
+const getNextBoard = (cellsArray, width, height) => {
+    const boardSquare = width * height;
     let cells = [];
     //функция для проверки того, является ли клетка первой в ряду
     const isFirstInARow = (index) => {
-        if (index % width !== 0) {
+        if (index % width === 0) {
             return true;
         }
         else {
@@ -16,7 +13,7 @@ const generateNewBoard = (cellsArray, boardSize, boardSquare) => {
 
     //функция для проверки того, является ли клетка последней в ряду
     const isLastInARow = (index) => {
-        if ((index + 1) % width !== 0) {
+        if ((index + 1) % width === 0) {
             return true;
         }
         else {
@@ -28,34 +25,38 @@ const generateNewBoard = (cellsArray, boardSize, boardSquare) => {
     const countAliveNeighbours = (index) => {
         let aliveNeighbours = 0;
 
+        //проверяем, не расположена ли клетка скраю доски, чтобы избежать обращения по несуществующим индексам
+        const notFirstInARow = !isFirstInARow(index);
+        const notLastInARow = !isLastInARow(index);
+
         //проверяем соседей слева и справа от клетки
-        if ((!isFirstInARow(index)) && (cellsArray[index - 1] === ALIVE_CELL)) {
+        if (notFirstInARow && cellsArray[index - 1] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        if ((!isLastInARow(index)) && (cellsArray[index + 1] === ALIVE_CELL)) {
+        if (notLastInARow && cellsArray[index + 1] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
         //проверяем верхних соседей клетки
-        if (index > (width - 1)) {
-            if ((!isFirstInARow(index)) && (cellsArray[index - (width - 1)] === ALIVE_CELL)) {
+        if (index - width >= 0) {
+            if (notFirstInARow && cellsArray[index - (width - 1)] === 1) {
                 aliveNeighbours = ++aliveNeighbours;
             }
-            if (cellsArray[index - width] === ALIVE_CELL) {
+            if (cellsArray[index - width] === 1) {
                 aliveNeighbours = ++aliveNeighbours;
             }
-            if ((!isLastInARow(index)) && (cellsArray[index - (width + 1)] === ALIVE_CELL)) {
+            if (notLastInARow && cellsArray[index - (width + 1)] === 1) {
                 aliveNeighbours = ++aliveNeighbours;
             }
         }
         //проверяем нижних соседей клетки
-        if ((index + width) < boardSquare) {
-            if ((!isFirstInARow(index)) && (cellsArray[index + (width - 1)] === ALIVE_CELL)) {
+        if (index + width < boardSquare) {
+            if (notFirstInARow && cellsArray[index + (width - 1)] === 1) {
                 aliveNeighbours = ++aliveNeighbours;
             }
-            if (cellsArray[index + width] === ALIVE_CELL) {
+            if (cellsArray[index + width] === 1) {
                 aliveNeighbours = ++aliveNeighbours;
             }
-            if ((!isLastInARow(index)) && (cellsArray[index + (width + 1)] === ALIVE_CELL)) {
+            if (notLastInARow && cellsArray[index + (width + 1)] === 1) {
                 aliveNeighbours = ++aliveNeighbours;
             }
         }
@@ -63,33 +64,30 @@ const generateNewBoard = (cellsArray, boardSize, boardSquare) => {
     }
 
     //присваиваем клеткам статус - живая или мёртвая, основываясь на правилах игры
-
     cells = cellsArray.map((cell, i) => {
         //определяем количество живых соседей
         const aliveCellsAround = countAliveNeighbours(i);
         //определяем, живая клетка или нет и применяем правила игры
-        if (cell === ALIVE_CELL) {
+        if (cell === 1) {
             if (aliveCellsAround < 2 || aliveCellsAround > 3) {
-                cell = DEAD_CELL;
+                cell = 0;
             }
         }
         //если клетка мёртвая
         else {
             //и у неё 3 живых соседа, то мы её возрождаем
             if (aliveCellsAround === 3) {
-                cell = ALIVE_CELL;
+                cell = 1;
             }
         }
         //возвращаем клетку для добавления в новый массив
         return cell;
     });
 
-    //создаем и выводим в консоль доску в виде таблицы на основе полученного выше массива
-    const board = createTableBoard(cells, boardSize);
-
-    return { board, cells };
+    // возвращаем массив с новыми клетками, рассчитанных на основе правил игры
+    return cells;
 }
 
 module.exports = {
-    generateNewBoard,
+    getNextBoard,
 };
