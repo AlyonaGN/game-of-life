@@ -1,10 +1,9 @@
 const { printBoard, clearBoard } = require('./printer');
 const { getNextBoard } = require('./nextBoardsGenerator');
 
-const runGame = (initializer) => {
+const runGame = async (initializer) => {
     //получаем параметры игры - значения клеток, ширину и высоту доски
-    const gameParameters = initializer.getParameters();
-    let { cellsArray, width, height } = gameParameters;
+    let { cellsArray, width, height } = await initializer.getParameters();
 
     /* каждую секунду: 
         выводим в консоль доску, основываясь на параметрах игры, 

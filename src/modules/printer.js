@@ -4,17 +4,16 @@ const { ALIVE_CELL, chars, DEAD_CELL } = require('../utils/consts');
 
 //функция, отвечающая за вывод в консоль доски на основе полученных данных
 const printBoard = (cellsArray, width, height) => {
-    //console.clear();
-    const copyArray = cellsArray.map(x => x);
+    console.clear();
     const table = new Table({
         chars
-      });
-    
+    });
+
     /* создаем таблицу с количеством рядов равным полученной высоте таблицы 
     и количеством клеток в каждом ряду равным заданной ширине  */
     for (let i = 0; i < height; i++) {
         table.push(
-            copyArray.splice(0, width).map((cell) => {
+            cellsArray[i].map((cell) => {
                 if (cell === 1) {
                     cell = ALIVE_CELL;
                     return colors.green(cell);
@@ -24,7 +23,7 @@ const printBoard = (cellsArray, width, height) => {
                     return colors.gray(cell);
                 }
             }));
-    }       
+    }
     console.log(table.toString());
 }
 

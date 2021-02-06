@@ -1,18 +1,15 @@
 const fsPromises = require('fs').promises;
 
-let file;
-//функция - считыватель информации из файла
+//функция-считыватель информации из файла
 const readFile = async (filePath) => {
-
-await fsPromises.readFile(filePath, { encoding: 'utf8' })
-  .then((data) => {
-    file = Array.from(data);
-  })
-  .catch(err => {
-    console.log(err);
-  });
-  return file; 
-};
+  try {
+    const data = await fsPromises.readFile(filePath, { encoding: 'utf8' });
+    return data;
+  } catch (error) {
+    throw new Error("Can't read file")
+  }
+    
+}
 
 module.exports = {
     readFile,

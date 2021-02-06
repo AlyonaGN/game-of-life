@@ -1,91 +1,82 @@
 const getNextBoard = (cellsArray, width, height) => {
-    const boardSquare = width * height;
-    let cells = [];
-    //функция для проверки того, является ли клетка первой в ряду
-    const isFirstInARow = (index) => {
-        if (index % width === 0) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    //функция для проверки того, является ли клетка последней в ряду
-    const isLastInARow = (index) => {
-        if ((index + 1) % width === 0) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+    let table = [];
 
     //функция для подсчёта живых соседей клетки
-    const countAliveNeighbours = (index) => {
+    const countAliveNeighbours = (rowIndex, columnIndex, leftColumnIndex, rightColumnIndex, higherRowIndex, lowerRowIndex) => {
         let aliveNeighbours = 0;
 
-        //проверяем, не расположена ли клетка скраю доски, чтобы избежать обращения по несуществующим индексам
-        const notFirstInARow = !isFirstInARow(index);
-        const notLastInARow = !isLastInARow(index);
-
         //проверяем соседей слева и справа от клетки
-        if (notFirstInARow && cellsArray[index - 1] === 1) {
+        if (cellsArray[rowIndex][leftColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        if (notLastInARow && cellsArray[index + 1] === 1) {
+        if (cellsArray[rowIndex][rightColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
         //проверяем верхних соседей клетки
-        if (index - width >= 0) {
-            if (notFirstInARow && cellsArray[index - (width - 1)] === 1) {
-                aliveNeighbours = ++aliveNeighbours;
-            }
-            if (cellsArray[index - width] === 1) {
-                aliveNeighbours = ++aliveNeighbours;
-            }
-            if (notLastInARow && cellsArray[index - (width + 1)] === 1) {
-                aliveNeighbours = ++aliveNeighbours;
-            }
+        if (cellsArray[higherRowIndex][leftColumnIndex] === 1) {
+            aliveNeighbours = ++aliveNeighbours;
+        }
+        if (cellsArray[higherRowIndex][columnIndex] === 1) {
+            aliveNeighbours = ++aliveNeighbours;
+        }
+        if (cellsArray[higherRowIndex][rightColumnIndex] === 1) {
+            aliveNeighbours = ++aliveNeighbours;
         }
         //проверяем нижних соседей клетки
-        if (index + width < boardSquare) {
-            if (notFirstInARow && cellsArray[index + (width - 1)] === 1) {
-                aliveNeighbours = ++aliveNeighbours;
-            }
-            if (cellsArray[index + width] === 1) {
-                aliveNeighbours = ++aliveNeighbours;
-            }
-            if (notLastInARow && cellsArray[index + (width + 1)] === 1) {
-                aliveNeighbours = ++aliveNeighbours;
-            }
+        if (cellsArray[lowerRowIndex][leftColumnIndex] === 1) {
+            aliveNeighbours = ++aliveNeighbours;
         }
+        if (cellsArray[lowerRowIndex][columnIndex] === 1) {
+            aliveNeighbours = ++aliveNeighbours;
+        }
+        if (cellsArray[lowerRowIndex][rightColumnIndex] === 1) {
+            aliveNeighbours = ++aliveNeighbours;
+        }
+        
         return aliveNeighbours;
     }
 
-    //присваиваем клеткам статус - живая или мёртвая, основываясь на правилах игры
-    cells = cellsArray.map((cell, i) => {
-        //определяем количество живых соседей
-        const aliveCellsAround = countAliveNeighbours(i);
-        //определяем, живая клетка или нет и применяем правила игры
-        if (cell === 1) {
-            if (aliveCellsAround < 2 || aliveCellsAround > 3) {
+    //бежим по каждому ряду
+    for (let i = 0; i < height; i++) {
+        const line = [];
+        //бежим по каждому столбцу в ряде
+        for (let j = 0; j < width; j++) {
+            //текущая клетка
+            let cell = cellsArray[i][j];
+            //определяем индекс столбца слева с учётом необходимости "схлапывания" левого и правого края доски
+            let leftColumnIndex = j === 0 ? width - 1 : j - 1;
+            //определяем индекс столбца справа с учётом необходимости "схлапывания" левого и правого края доски
+            let rightColumnIndex = j === width - 1 ? 0 : j + 1;
+            //определяем индекс ряда сверху с учётом необходимости "схлапывания" верхнего и нижнего края доски
+            let higherRowIndex = i === 0 ? height - 1 : i - 1;
+            //определяем индекс ряда снизу с учётом необходимости "схлапывания" верхнего и нижнего края доски
+            let lowerRowIndex = i === height - 1 ? 0 : i + 1;
+
+            //определяем количество живых соседей
+            const aliveCellsAround = countAliveNeighbours(i, j, leftColumnIndex, rightColumnIndex, higherRowIndex, lowerRowIndex);
+
+            //определяем, живая клетка или нет и применяем правила игры
+            //если клетка живая и у неё меньше двух или больше трёх живых соседей, она умирает
+            if (cell === 1) {
+                if (aliveCellsAround < 2 || aliveCellsAround > 3) {
                 cell = 0;
+                }
             }
-        }
-        //если клетка мёртвая
-        else {
-            //и у неё 3 живых соседа, то мы её возрождаем
-            if (aliveCellsAround === 3) {
-                cell = 1;
+            //если клетка мёртвая
+            else {
+                //и у неё 3 живых соседа, то мы её возрождаем
+                if (aliveCellsAround === 3) {
+                    cell = 1;
+                }
             }
+            //возвращаем клетку для добавления в новый массив
+            line.push(cell);
         }
-        //возвращаем клетку для добавления в новый массив
-        return cell;
-    });
+        table.push(line);
+    }
 
     // возвращаем массив с новыми клетками, рассчитанных на основе правил игры
-    return cells;
+    return table;
 }
 
 module.exports = {
