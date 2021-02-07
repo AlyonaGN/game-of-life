@@ -15,8 +15,8 @@
 2. файл - для этого необходимо ввести команду `node app.js file --path <filepath>`.
 
   В качестве примеров можно использовать файлы из папки exampleFiles:  
-  `node app.js file --path /exampleFiles/bacteria.txt`  
-  `node app.js file --path /exampleFiles/cross.txt`  
+  `node app.js file --path exampleFiles/bacteria.txt`  
+  `node app.js file --path exampleFiles/cross.txt`  
 
   В этом случае первое состояние доски, а также её длина и ширина берутся из файла. 
   Файл должен содержать информацию следующего вида:
