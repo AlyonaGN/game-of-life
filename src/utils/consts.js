@@ -6,7 +6,7 @@ const BOARD_SIZES = {
 };
 
 const CELLS_STATUSES = {
-    DEAD_CELL: 'DEAD',
+    DEAD_CELL: 'DEAD ',
     ALIVE_CELL: 'ALIVE',
 }
 
