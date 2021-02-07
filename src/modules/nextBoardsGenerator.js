@@ -1,39 +1,51 @@
-const getNextBoard = (cellsArray, width, height) => {
-    let table = [];
+//функция-генератор последующих состояний доски
+const getNextBoard = (rowsArray, width, height) => {
+    let updatedRowsArray = [];
 
     //функция для подсчёта живых соседей клетки
-    const countAliveNeighbours = (rowIndex, columnIndex, leftColumnIndex, rightColumnIndex, higherRowIndex, lowerRowIndex) => {
+    const countAliveNeighbours = (rowIndex, columnIndex, { leftColumnIndex, rightColumnIndex, higherRowIndex, lowerRowIndex }) => {
         let aliveNeighbours = 0;
 
         //проверяем соседей слева и справа от клетки
-        if (cellsArray[rowIndex][leftColumnIndex] === 1) {
+        if (rowsArray[rowIndex][leftColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        if (cellsArray[rowIndex][rightColumnIndex] === 1) {
+        if (rowsArray[rowIndex][rightColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
         //проверяем верхних соседей клетки
-        if (cellsArray[higherRowIndex][leftColumnIndex] === 1) {
+        if (rowsArray[higherRowIndex][leftColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        if (cellsArray[higherRowIndex][columnIndex] === 1) {
+        if (rowsArray[higherRowIndex][columnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        if (cellsArray[higherRowIndex][rightColumnIndex] === 1) {
+        if (rowsArray[higherRowIndex][rightColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
         //проверяем нижних соседей клетки
-        if (cellsArray[lowerRowIndex][leftColumnIndex] === 1) {
+        if (rowsArray[lowerRowIndex][leftColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        if (cellsArray[lowerRowIndex][columnIndex] === 1) {
+        if (rowsArray[lowerRowIndex][columnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        if (cellsArray[lowerRowIndex][rightColumnIndex] === 1) {
+        if (rowsArray[lowerRowIndex][rightColumnIndex] === 1) {
             aliveNeighbours = ++aliveNeighbours;
         }
-        
+
         return aliveNeighbours;
+    }
+
+    /* функция, определяющая индексы столбца слева и справа, а также верхнего и нижнего ряда заданной клетки 
+    с учётом необходимости "схлапывания" левого и правого, а также верхнего и нижнего краев доски */
+    const countSurroundingIndexes = (width, height, rowIndex, heightIndex) => {
+        const leftColumnIndex = heightIndex === 0 ? width - 1 : heightIndex - 1;
+        const rightColumnIndex = heightIndex === width - 1 ? 0 : heightIndex + 1;
+        const higherRowIndex = rowIndex === 0 ? height - 1 : rowIndex - 1;
+        const lowerRowIndex = rowIndex === height - 1 ? 0 : rowIndex + 1;
+
+        return { leftColumnIndex, rightColumnIndex, higherRowIndex, lowerRowIndex };
     }
 
     //бежим по каждому ряду
@@ -42,18 +54,13 @@ const getNextBoard = (cellsArray, width, height) => {
         //бежим по каждому столбцу в ряде
         for (let j = 0; j < width; j++) {
             //текущая клетка
-            let cell = cellsArray[i][j];
-            //определяем индекс столбца слева с учётом необходимости "схлапывания" левого и правого края доски
-            let leftColumnIndex = j === 0 ? width - 1 : j - 1;
-            //определяем индекс столбца справа с учётом необходимости "схлапывания" левого и правого края доски
-            let rightColumnIndex = j === width - 1 ? 0 : j + 1;
-            //определяем индекс ряда сверху с учётом необходимости "схлапывания" верхнего и нижнего края доски
-            let higherRowIndex = i === 0 ? height - 1 : i - 1;
-            //определяем индекс ряда снизу с учётом необходимости "схлапывания" верхнего и нижнего края доски
-            let lowerRowIndex = i === height - 1 ? 0 : i + 1;
+            let cell = rowsArray[i][j];
+
+            //получаем индексы левого и правого столбца, а также верхнего и нижнего ряда по отношению к текущей клетке
+            const surroundingIndexes = countSurroundingIndexes(width, height, i, j)
 
             //определяем количество живых соседей
-            const aliveCellsAround = countAliveNeighbours(i, j, leftColumnIndex, rightColumnIndex, higherRowIndex, lowerRowIndex);
+            const aliveCellsAround = countAliveNeighbours(i, j, surroundingIndexes);
 
             //определяем, живая клетка или нет и применяем правила игры
             //если клетка живая и у неё меньше двух или больше трёх живых соседей, она умирает
@@ -69,14 +76,15 @@ const getNextBoard = (cellsArray, width, height) => {
                     cell = 1;
                 }
             }
-            //возвращаем клетку для добавления в новый массив
+            //в любом случае добавляем клетку в её ряд
             line.push(cell);
         }
-        table.push(line);
+        //добавляем получившийся ряд в доску (массив с рядами)
+        updatedRowsArray.push(line);
     }
 
-    // возвращаем массив с новыми клетками, рассчитанных на основе правил игры
-    return table;
+    // возвращаем обновленный массив, рассчитанный на основе правил игры
+    return updatedRowsArray;
 }
 
 module.exports = {

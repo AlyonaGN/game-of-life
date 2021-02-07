@@ -1,9 +1,9 @@
-const { printBoard, clearBoard } = require('./printer');
+const { printBoard } = require('./printer');
 const { getNextBoard } = require('./nextBoardsGenerator');
 
 const runGame = async (initializer) => {
     //получаем параметры игры - значения клеток, ширину и высоту доски
-    let { cellsArray, width, height } = await initializer.getParameters();
+    let { rowsArray, width, height } = await initializer.getParameters();
 
     /* каждую секунду: 
         выводим в консоль доску, основываясь на параметрах игры, 
@@ -11,8 +11,8 @@ const runGame = async (initializer) => {
         очищаем консоль,
         начинаем сначала  */
     setInterval(() => {
-        printBoard(cellsArray, width, height);
-        cellsArray = getNextBoard(cellsArray, width, height);
+        printBoard(rowsArray, height);
+        rowsArray = getNextBoard(rowsArray, width, height);
     }, 1000);
 };
 
