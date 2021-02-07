@@ -7,7 +7,7 @@ let filePath;
 
 //функция, получающая информацию из файла и возвращающая её наружу
 const parseFile = (file) => {
-    const gameParameters = file.split('\n');
+    const gameParameters = file.split(/\r?\n/);
 
     //валидация файла на соответствие формату
     const fileValidationMessages = validateFile(gameParameters);
