@@ -1,47 +1,65 @@
-# game-of-life
+## CLI Application: "Life"
 
-Перед вами CLI приложение игры "Жизнь".
+To start the game, you need to download the repository and run the command `npm install`.
 
-Для того, чтобы начать игру необходимо скачать репозиторий и выполнить команду `npm install`.
+### Game Modes
 
-## Игру можно запустить в двух режимах
+The game can be launched in two modes:
 
-1. рандом - для этого необходимо ввести команду `node app.js random`. 
+- **Random Mode**: To start the game in this mode, enter the command:
+
+  ```bash
+  node app.js random
+  ```
+
+  In this case, the initial state of the board, as well as its length and width, are generated randomly.
   
-    В этом случае первое состояние доски, а также её длина и ширина генерируются случайным образом.
-
-    Для целей корректного отображения игры в режиме "random" на небольших экранах/небольших окошках терминала и соответствия правилам игры установлены ограничители максимального и минимального размера доски. С учетом используемой формулы при текущих значениях констант - максимальная длина и ширина доски - 10 клеток, а площадь, соответственно - 100 клеток, минимальная длина и ширина - 3 клетки, а площадь, соответственно - 9 клеток). Вместе с тем, при необходимости, изменить указанные ограничители, задав нужные значения константам в файле consts.js - `./utils/consts.js`.
-
-2. файл - для этого необходимо ввести команду `node app.js file --path <filepath>`.
-
-    В качестве примеров можно использовать файлы из папки exampleFiles:  
-    `node app.js file --path exampleFiles/bacteria.txt`  
-    `node app.js file --path exampleFiles/cross.txt`  
-
-    В этом случае первое состояние доски, а также её длина и ширина берутся из файла. 
-    Файл должен содержать информацию следующего вида:
-    ```
-    4
-    4
-    0000
-    0110
-    0110
-    0000
-    ```
+  For proper display of the game in "random" mode on small screens/terminal windows and to comply with the game rules, there are constraints on the maximum and minimum board size:
   
-    Первая строка обозначает ширину доски, вторая - высоту, третья и последующие - ряды с   клетками. Состояние (значение) клеток может быть равно 0 (мёртвая клетка) и 1 (живая   клетка).
+  Maximum board size: 10x10 cells (100 cells in total).
+  Minimum board size: 3x3 cells (9 cells in total).
+  If necessary, you can modify these constraints by setting the desired values in the consts.js file located at ./utils/consts.js.
+
+- **File Mode**: To start the game in this mode, enter the command:
+  ```bash
+  node app.js file --path <filepath>
+  ```
+
+  You can use example files from the exampleFiles folder, such as:
+  ```bash
+  node app.js file --path exampleFiles/bacteria.txt
+  node app.js file --path exampleFiles/cross.txt
+  ```
+
+  In this mode, the initial state of the board, as well as its length and width, are read from the specified file. The file should contain information in the following format:
+  ```
+  4
+  4
+  0000
+  0110
+  0110
+  0000
+  ```
   
-    При этом, количество клеток в ряде (символов в третьей и каждой последующей строке)   должно быть равно значению первой строки файла - ширине доски. Кроме того, количество   рядов с клетками должно быть равно значению второй строки файла - высоте доски. 
+  The first line represents the board's width.
+  The second line represents the height.
+  The subsequent lines represent the rows of cells.
+  The state (value) of the cells can be either 0 (dead cell) or 1 (live cell).
   
-    В случае несоответствия данных в файле указанным выше правилам и формату произойдет ошибка валидации.
+  The number of cells in each row (characters in the third and subsequent lines) must match the width specified in the first line of the file.
+  The number of rows with cells must match the height specified in the second line.
+  If the data in the file does not adhere to these rules and format, a validation error will occur.
 
-## Игра подчиняется следующим правилам
+### Game Rules
+The game follows these rules:
 
-В консоль выводится доска размером, заданным рандомно или прочитанным из файла. Клетка может находиться в одном из двух состояний: живая или мёртвая. Каждая клетка взаимодействует с восемью соседями. 
+1. The board, of a size determined either randomly or from the file, is displayed in the console.
+2. Each cell can be in one of two states: live or dead.
+3. Each cell interacts with its eight neighbors.
+   
+Every second, the console outputs a new state of the board, which is determined by the following rules based on the previous state:
 
-Каждую секунду в консоль выводится новое состояние доски, которое зависит от предыдущего следующим образом:
-
-1. живая клетка, у которой меньше двух живых соседей, погибает.
-2. живая клетка, у которой два или три живых соседа, выживает.
-3. живая клетка, у которой больше трёх живых соседей, погибает.
-4. мёртвая клетка, у которой три живых соседа, возрождается.
+1. A live cell with fewer than two live neighbors dies.
+2. A live cell with two or three live neighbors survives.
+3. A live cell with more than three live neighbors dies.
+4. A dead cell with exactly three live neighbors becomes alive.
